@@ -1,0 +1,111 @@
+data:                                      # See lib/datasets/EarthNet2021Dataset.py for a detailed description.
+    filter_settings:
+        type: cloud-free                   # Strategy for removing observations with data gaps. ['cloud-free', 'cloud-free_consecutive']
+        min_length: 5                      # Minimum sequence length.
+        return_valid_obs_only: true        # True to return the cloud-filtered sequences, False otherwise.
+    crop_settings:
+        enabled: false                     # Activate/deactivate spatial cropping.
+        shape: ${tuple:64,64}              # Spatial size of the cropped images.
+    pe_strategy: day-of-year               # Strategy for positional encoding. ['day-of-year', 'day-within-sequence', 'absolute', 'enumeration']
+    max_seq_length: 10                     # Maximum temporal sequence length. Set to None to skip temporal trimming.
+    render_occluded_above_p: 0.9           # Minimum cloud cover [-] to fully mask an input image. Set to None to keep original cloud masks.
+    return_cloud_mask: true                # Set to True if metrics/masked_metrics is True.
+
+mask:
+    mask_type: random_clouds               # Mask the input time series with randomly sampled cloud masks or the actual cloud masks. ['random_clouds', 'real_clouds']
+    ratio_masked_frames: 0.5               # Ratio of partially/fully masked images per image time series (upper bound).
+    ratio_fully_masked_frames: 0.0         # Ratio of fully masked images per image time series (upper bound).
+    fixed_masking_ratio: false             # True to vary the masking ratio across different image time series, False otherwise.
+    non_masked_frames: [0]                 # list of int, time steps to be excluded from masking. E.g., [0] never masks the first frame in a sequence.
+    intersect_real_cloud_masks: false      # True to intersect randomly sampled cloud masks with the actual cloud masks, False otherwise.
+    dilate_cloud_masks: false              # True to dilate the cloud masks before masking, False otherwise.
+    fill_type: fill_value                  # Strategy for initializing masked pixels. ['fill_value', 'white_noise', 'mean']
+    fill_value: 1                          # Pixel value of masked pixels. Used if fill_type == 'fill_value'.
+
+method:
+    model_type: utilise
+    pad_value: 0
+
+utilise:                                   # See lib/models/utilise.py for a detailed description.
+    encoder_widths: [64,64,64,128]
+    decoder_widths: [64,64,64,128]
+    upconv_type: transpose
+    encoder_norm:
+    decoder_norm:
+    skip_norm:
+    activation: relu
+    str_conv_k: 4
+    str_conv_s: 2
+    str_conv_p: 1
+    str_conv_k_up: 2
+    str_conv_p_up: 0
+    skip_attention: false
+    n_temporal_encoding_layers: 1
+    agg_mode: att_group
+    n_head: 4
+    d_k: 4
+    bias_qk: false
+    attn_dropout: 0.1
+    dropout: 0.1
+    n_groups: 4
+    ltae_norm: group
+    ltae_activation: gelu
+    norm_first: true
+    output_activation: sigmoid
+
+training_settings:
+    batch_size: 3                          # Batch size.
+    num_epochs: 1000                       # Number of training epochs.
+    accum_iter: 1                          # Accumulate gradients for 'accum_iter` iterations.
+    gradient_clip_norm: 0                  # If > 0, clips gradient norm to that value.
+    gradient_clip_value: 0                 # If > 0, clips gradient at specified value.
+    resume: false                          # True to resume training, False otherwise.
+    pretrained_path: ''                    # Path to the pretrained model weights.
+
+optimizer:
+    name: Adam                             # Optimizer.
+    learning_rate: 2.e-04                  # Initial learning rate.
+    weight_decay: 0                        # Weight decay.
+
+scheduler:
+    name: MultiStepLR                      # Learning rate scheduler.
+    enabled: true                          # Activate/deactivate the learning rate scheduler.
+    milestones: [50, 100, 150, 200, 250]   # Settings of the learning rate scheduler.
+    gamma: 0.5
+
+loss:
+    ssim_loss: false                       # SSIM loss.
+    l1_loss: true                          # L1 reconstruction loss computed over all pixels.
+    l1_loss_occluded_input_pixels: false   # L1 reconstruction loss computed over all masked pixels in the input sequence.
+    l1_loss_observed_input_pixels: false   # L1 reconstruction loss computed over all observed pixels in the input sequence.
+    masked_l1_loss: false                  # L1 reconstruction loss computed over all pixels with valid ground truth (real cloud masks used for masking remaining clouds).
+    ssim_loss_w: 1.0                       # Weight for `ssim_loss`.
+    l1_loss_w: 1.0                         # Weight for `l1_loss`.
+    l1_loss_occluded_input_pixels_w: 1.0   # Weight for `l1_loss_occluded_input_pixels`.
+    l1_loss_observed_input_pixels_w: 1.0   # Weight for `l1_loss_observed_input_pixels`.
+    masked_l1_loss_w: 1.0                  # Weight for `masked_l1_loss`.
+
+metrics:
+    masked_metrics: true                   # True to compute all pixel-based metrics only for those pixels with cloud-free target reflectance, False to evaluate all pixels.
+    mae: true                              # Mean absolute error (MAE).
+    mse: true                              # Mean square error (MSE).
+    rmse: true                             # Root mean square error (RMSE).
+    ssim: true                             # Structural similarity index (SSIM).
+    psnr: true                             # Peak signal-to-noise ratio (PSNR).
+    sam: true                              # Spectral angle mapper (SAM).
+
+misc:
+    logstep_train: 100                     # Training log interval in number of iterations.
+    checkpoint_every_n_epochs: 5           # Save checkpoint after every `checkpoint_every_n_epochs` training epochs.
+    log_gradients: false                   # True to log gradients and model parameters using Weights & Biases.
+    val_every_n_epochs: 1                  # Validation interval in epochs.
+    plot_every_n_epochs: 15                # Plot interval in epochs.
+    plot_val_sample: []                    # List of int, indices of the validation samples to be visualized during training using Weights & Biases.
+    num_workers: 8                         # Number of dataloader worker processes.
+    random_seed: 0                         # Random seed.
+    pin_memory: false                      # Pin memory (dataloader settings).
+    run_mode: train                        # Run mode. ['train', 'val', 'test']
+
+output:
+    suffix:                                # Suffix appended to the name of the experiment directory.
+    plot_model_txt: true                   # True to dump the model architecture to a txt file, False otherwise.

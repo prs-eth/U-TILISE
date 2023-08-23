@@ -1,0 +1,133 @@
+data:
+  dataset: earthnet2021
+  root: data/
+  hdf5_file:
+    train: train.hdf5
+    val: earthnet2021_val_simulation.hdf5
+  preprocessed: true
+  split: train
+  channels: bgr-nir
+  filter_settings:
+    type: cloud-free
+    min_length: 5
+    return_valid_obs_only: true
+  crop_settings:
+    enabled: false
+    shape: ${tuple:64,64}
+  pe_strategy: day-of-year
+  max_seq_length: 10
+  render_occluded_above_p: 0.9
+  return_cloud_mask: true
+  mode: val
+mask:
+  mask_type: random_clouds
+  ratio_masked_frames: 0.5
+  ratio_fully_masked_frames: 0.0
+  fixed_masking_ratio: false
+  non_masked_frames:
+  - 0
+  intersect_real_cloud_masks: false
+  dilate_cloud_masks: false
+  fill_type: fill_value
+  fill_value: 1
+method:
+  model_type: utilise
+  pad_value: 0
+utilise:
+  encoder_widths:
+  - 64
+  - 64
+  - 64
+  - 128
+  decoder_widths:
+  - 64
+  - 64
+  - 64
+  - 128
+  upconv_type: transpose
+  encoder_norm: null
+  decoder_norm: null
+  skip_norm: null
+  activation: relu
+  str_conv_k: 4
+  str_conv_s: 2
+  str_conv_p: 1
+  str_conv_k_up: 2
+  str_conv_p_up: 0
+  skip_attention: false
+  n_temporal_encoding_layers: 1
+  agg_mode: att_group
+  n_head: 4
+  d_k: 4
+  bias_qk: false
+  attn_dropout: 0.1
+  dropout: 0.1
+  n_groups: 4
+  ltae_norm: group
+  ltae_activation: gelu
+  norm_first: true
+  output_activation: sigmoid
+training_settings:
+  batch_size: 3
+  num_epochs: 1000
+  accum_iter: 1
+  gradient_clip_norm: 0
+  gradient_clip_value: 0
+  resume: false
+  pretrained_path: 
+optimizer:
+  name: Adam
+  learning_rate: 0.0002
+  weight_decay: 0
+scheduler:
+  name: MultiStepLR
+  enabled: true
+  milestones:
+  - 50
+  - 100
+  - 150
+  - 200  
+  - 250
+  gamma: 0.5
+loss:
+  ssim_loss: false
+  l1_loss: true
+  l1_loss_occluded_input_pixels: false
+  l1_loss_observed_input_pixels: false
+  masked_l1_loss: false
+  ssim_loss_w: 1.0
+  l1_loss_w: 1.0
+  l1_loss_occluded_input_pixels_w: 1.0
+  l1_loss_observed_input_pixels_w: 1.0
+  masked_l1_loss_w: 1.0
+metrics:
+  masked_metrics: true
+  mae: true
+  mse: true
+  rmse: true
+  ssim: true
+  psnr: true
+  sam: true
+misc:
+  logstep_train: 100
+  checkpoint_every_n_epochs: 2
+  log_gradients: false
+  val_every_n_epochs: 1
+  plot_every_n_epochs: 15
+  plot_val_sample:
+  - 1167
+  - 1799
+  - 2917
+  - 2927
+  - 1719
+  - 3093
+  - 3375
+  num_workers: 8
+  random_seed: 0
+  run_mode: train
+  pin_memory: false
+output:
+  suffix: 
+  plot_model_txt: true
+wandb:
+  project: 2023_UTILISE_EarthNet2021

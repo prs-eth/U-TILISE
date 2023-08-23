@@ -1,0 +1,10 @@
+data:
+    dataset: earthnet2021        # Name of the dataset, ['earthnet2021', 'sen12mscrts']
+    root: data/                  # Data root directory
+    hdf5_file:
+        train: train.hdf5
+        val: earthnet2021_val_simulation.hdf5
+    preprocessed: true
+    split: train
+    channels: bgr-nir
+    mode: val

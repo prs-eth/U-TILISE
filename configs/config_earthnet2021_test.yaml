@@ -1,0 +1,16 @@
+data:
+    dataset: earthnet2021        
+    root: data/
+    hdf5_file: earthnet2021_iid_test_split.hdf5
+    preprocessed: false
+    split: iid
+    channels: bgr-nir
+    max_seq_length:
+    filter_settings:
+
+mask:
+    mask_type: real_clouds
+    dilate_cloud_masks: false
+    
+misc:
+    run_mode: test

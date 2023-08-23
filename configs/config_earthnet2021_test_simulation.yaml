@@ -1,0 +1,11 @@
+data:
+    dataset: earthnet2021        
+    root: data/                  
+    hdf5_file: earthnet2021_iid_test_split_simulation.hdf5
+    preprocessed: true
+    split: iid
+    channels: bgr-nir
+    max_seq_length: 
+    
+misc:
+    run_mode: test

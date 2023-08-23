@@ -1,0 +1,26 @@
+data:
+    dataset: sen12mscrts
+    root: data/
+    split: val
+    channels: all
+    include_S1: true
+    filter_settings:
+        type: cloud-free
+        min_length: 5
+        max_t_sampling: 28
+        return_valid_obs_only: true
+    crop_settings:
+        enabled: false
+        shape: ${tuple:64,64}
+    max_seq_length: 10
+    render_occluded_above_p: 0.0
+
+mask:
+    mask_type: random_clouds
+    ratio_masked_frames: 0.5
+    ratio_fully_masked_frames: 0.0
+    fixed_masking_ratio: false
+    non_masked_frames: [0]
+
+misc:
+    random_seed: 0

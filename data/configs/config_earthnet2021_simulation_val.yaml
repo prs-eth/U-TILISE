@@ -1,0 +1,25 @@
+data:
+    dataset: earthnet2021
+    root: data/
+    split: train
+    mode: val
+    channels: bgr-nir
+    filter_settings:
+        type: cloud-free
+        min_length: 5
+        return_valid_obs_only: true
+    crop_settings:
+        enabled: false
+        shape: ${tuple:64,64}
+    max_seq_length: 10
+    render_occluded_above_p: 0.0
+
+mask:
+    mask_type: random_clouds
+    ratio_masked_frames: 0.5
+    ratio_fully_masked_frames: 0.0
+    fixed_masking_ratio: false
+    non_masked_frames: [0]
+
+misc:
+    random_seed: 0

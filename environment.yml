@@ -1,0 +1,31 @@
+name: u-tilise
+channels:
+    - pytorch
+    - conda-forge
+    - nvidia
+    - anaconda
+    - defaults
+dependencies:
+    - python=3.10
+    - pip=22.3
+    - pytorch=1.13
+    - torchvision=0.14
+    - torchaudio=0.13
+    - pytorch-cuda=11.6
+    - cudatoolkit=11.3
+    - h5py=3.7
+    - ipywidgets=7.6
+    - ipykernel=6.15
+    - kornia=0.6.8
+    - matplotlib=3.6
+    - numba==0.55
+    - omegaconf==2.3
+    - torchinfo==1.7
+    - tqdm==4.64
+    - wandb==0.13.9
+    - pip:
+      - setuptools==61.2
+      - prodict==0.8.18
+      - torchgeometry==0.1.2
+      - tensorboard
+      - nestargs

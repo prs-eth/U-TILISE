@@ -1,0 +1,36 @@
+data:
+    dataset: sen12mscrts         # Name of the dataset, ['earthnet2021', 'sen12mscrts']
+    root: data/                  # Data root directory
+    hdf5_file:
+        train: train.hdf5
+        val: sen12mscrts_val_simulation.hdf5
+    preprocessed: true
+    split: val
+    channels: all
+    include_S1: false
+    filter_settings:
+        type: cloud-free
+        min_length: 5
+        max_t_sampling: 28
+        return_valid_obs_only: true
+    ignore_seq_with_black_images: true
+    
+utilise:                                   
+    encoder_widths: [64,64,64,64,128]
+    decoder_widths: [64,64,64,64,128]
+    
+optimizer:
+    name: Adam
+    learning_rate: 2.e-04
+    weight_decay: 1.0e-05
+
+scheduler:
+    name: MultiStepLR 
+    enabled: true
+    milestones: [40,60,80,100]
+    gamma: 0.5
+    
+    
+    
+    
+
