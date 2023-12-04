@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-    <h3 align="center">[<a href="https://arxiv.org/abs/2305.13277">ArXiv</a>]</h3>
+    <h3 align="center">[<a href="https://doi.org/10.1109/TGRS.2023.3333391">Paper</a>] [<a href="https://arxiv.org/abs/2305.13277">ArXiv</a>]</h3>
 </p>
 
 
@@ -76,12 +76,12 @@ and covers a spatial extent of 128&times;128 pixels (2.56&times;2.56 km in scene
 series from 2018 with a spatial extent of 256&times;256 pixels (2.56&times;2.56 km in scene space). Each time series
 contains 30 images. The images encompass all 13 spectral bands, upsampled to 10 m resolution. Furthermore, every optical image 
 is paired with a spatially co-registered, temporally close (but not synchronous) C-band SAR image with two channels representing 
-the $\sigma_0$ back-scatter coefficients in the VV and VH polarizations, in units of decibels (dB). Furthermore, the dataset 
+the $\sigma_0$ backscatter coefficients in the VV and VH polarizations, in units of decibels (dB). Furthermore, the dataset 
 includes pixel-wise cloud probabilities and binary cloud masks.
 
 ### Simulation of data gaps
-To train and quantitatively assess U&#8209;TILISE's performance, we utilize gap&#8209;free (cloud&#8209;free) Sentinel&#8209;2 satellite image time series.
-Our preprocessing steps involve:
+To train and quantitatively assess U&#8209;TILISE's performance, we use gap&#8209;free (cloud&#8209;free) Sentinel&#8209;2 satellite image time series.
+Our preprocessing steps are as follows:
 1. We first identify all images with partially occluded pixels or images that are occluded/missing entirely by applying 
 a threshold to the cloud probability maps (if available) or the binary cloud masks. We then remove all images with data gaps to produce 
 cloud&#8209;free time series that exhibit a valid observation for every spatio-temporal location.
@@ -94,9 +94,9 @@ cloud&#8209;free time series that exhibit a valid observation for every spatio-t
 Ensure the output of your custom data loader meets the following minimum requirements:
 
 - `x`: (Masked) input time series, of shape $(T \times C \times H \times W)$.
-- `masks`: Masks used to flag occluded/missing pixels in `x` with dimensions $(T \times 1 \times H \times W)$.
+- `masks`: Masks used to mark occluded/missing pixels in `y` with dimensions $(T \times 1 \times H \times W)$.
 - `position_days`: Positions used for positional encoding, of shape $(T, )$.
-- `y`: Target time series, of shape $(T \times C \times H \times W)$.
+- `y`: Observed/Target time series, of shape $(T \times C \times H \times W)$.
 
 For visualization during training in Weights & Biases:
 - Include `c_index_rgb`, `c_index_nir`, and `sample_index`.
@@ -107,9 +107,9 @@ For visualization in [demo.ipynb](demo.ipynb):
 
 ## Preprocessing
 
-:warning: **Note:** If you don't intend to train U&#8209;TILISE on either the EarthNet2021 or the SEN12MS&#8209;CR&#8209;TS dataset yourself, you can skip this section.
+:warning: **Note:** Skip this section if you don't intend to retrain U&#8209;TILISE on the EarthNet2021 or the SEN12MS&#8209;CR&#8209;TS dataset.
 
-To train U&#8209;TILISE on either the EarthNet2021 or the SEN12MS&#8209;CR&#8209;TS dataset, you will need to complete several steps:
+To train U&#8209;TILISE on the EarthNet2021 or the SEN12MS&#8209;CR&#8209;TS dataset, you will need to complete several steps:
 downloading the dataset, converting it from its native format to one compatible with our data loaders, and running a simulation to 
 generate cloud&#8209;free sequences with synthetically added data gaps. Here's a step-by-step guide:
 
@@ -130,7 +130,7 @@ generate cloud&#8209;free sequences with synthetically added data gaps. Here's a
    python ./toolbox/EarthNet2021_npz2hdf5.py --root_source <data_directory> --root_dest <output_directory> --split ood
    ```
     
-   Ensure to replace `data_directory` with the root directory where you have saved your downloaded data and `output_directory` with
+   Replace `data_directory` with the root directory where you have saved your downloaded data and `output_directory` with
    your preferred destination for the HDF5 files.
    
    Upon executing the above commands, you should find the following HDF5 files in `output_directory`:
@@ -154,7 +154,7 @@ generate cloud&#8209;free sequences with synthetically added data gaps. Here's a
    configuration file to match the `output_directory` used in step 2. Optionally, change `max_seq_length` to modify the fixed
    maximal temporal length $T$.
 
-   This process produces a new HDF5 file, `/output_directory/earthnet2021_val_simulation.hdf5`. Among others, this file contains the
+   This step creates a new HDF5 file `/output_directory/earthnet2021_val_simulation.hdf5`. Among others, this file contains the
    temporally trimmed cloud&#8209;free validation time series, the corresponding time series with synthetically introduced data gaps, the masks
    used for masking, and the acquisition dates. 
 
@@ -167,7 +167,7 @@ generate cloud&#8209;free sequences with synthetically added data gaps. Here's a
    python ./toolbox/simulate_dataset.py --config_file ./data/configs/config_earthnet2021_simulation_test.yaml --out_dir <output_directory> --out_hdf5_filename earthnet2021_iid_test_split_simulation.hdf5
    ```
 
-   Again, ensure to configure `root` in the [config_earthnet2021_simulation_test.yaml](./data/configs/config_earthnet2021_simulation_test.yaml)
+   Again, configure `root` in the [config_earthnet2021_simulation_test.yaml](./data/configs/config_earthnet2021_simulation_test.yaml)
    configuration file to match the `output_directory` used in step 2. If you wish to process the *ood* test split instead, set the
    `split` parameter to *ood* and adjust `--out_hdf5_filename` accordingly.
 
@@ -184,7 +184,7 @@ generate cloud&#8209;free sequences with synthetically added data gaps. Here's a
 2. **Data conversion**
 
    To convert and aggregate the .tif files from individual acquisitions into a single HDF5 file for each data split
-   (i.e., train, val, test), utilize the functionalities provided [here](https://github.com/PatrickTUM/SEN12MS-CR-TS/blob/master/util/hdf5converter/).
+   (i.e., train, val, test), use the functionalities provided [here](https://github.com/PatrickTUM/SEN12MS-CR-TS/blob/master/util/hdf5converter/).
 
 3. **Detection of real data gaps**
 
@@ -223,7 +223,7 @@ where:
 - `/path/to/config_file.yaml` is the YAML configuration file specifying all runtime arguments.
 - `--save_dir` specifies the output directory.
 
-All training hyperparameters are predefined in [default.yaml](configs/default.yaml), set to the values utilized
+All training hyperparameters are predefined in [default.yaml](configs/default.yaml) and set to the values used
 in the main experiments of the paper. If a parameter is specified in `/path/to/config_file.yaml`, it will override the default value.
 
 To view all available training options, run:
@@ -234,7 +234,7 @@ python run_train.py -h
 **Example configuration files**
 
 We provide a collection of configuration files within the `./configs/` directory:
-* `default.yaml`: Contains the default parameter settings.
+* `default.yaml`: Default parameter settings.
 * `config_earthnet2021_train.yaml`: Additional settings used to train on the EarthNet2021 dataset.
 * `config_sen12mscrts_train.yaml`: Additional settings used to train on the SEN12MS&#8209;CR&#8209;TS dataset.
 * `config_earthnet2021_test_simulation.yaml`: Test settings for the EarthNet2021 dataset (synthetic data gaps).
@@ -261,7 +261,7 @@ python run_eval.py -h
 
 **Examples**
 
-1. To evaluate the *iid* test split of the EarthNet2021 dataset, utilize the following command:
+1. To evaluate the *iid* test split of the EarthNet2021 dataset, use the following command:
 ```bash
 python run_eval.py ./configs/demo_train_config.yaml utilise --test-data.data-dir ./data/ --test-data.hdf5-file earthnet2021_iid_test_split_simulation.hdf5 --test-data.split iid --checkpoint ./checkpoints/utilise_earthnet2021.pth 
 ```
@@ -276,7 +276,7 @@ python run_eval.py ./configs/demo_train_config.yaml trivial --mode linear_interp
 
 ### Inference
 
-Check out the Jupyter Notebook [demo.ipynb](demo.ipynb). It provides a step-by-step demonstration of using U&#8209;TILISE to impute a 
+Check out the Jupyter Notebook [demo.ipynb](demo.ipynb), which provides a step-by-step demonstration of using U&#8209;TILISE to impute a 
 given time series and visualize the associated attention masks.
 
 
@@ -285,8 +285,9 @@ given time series and visualize the associated attention masks.
 @article{stucker2023u,
   title={{U-TILISE}: A Sequence-to-sequence Model for Cloud Removal in Optical Satellite Time Series},
   author={Stucker, Corinne and Garnot, Vivien Sainte Fare and Schindler, Konrad},
-  journal={arXiv preprint arXiv:2305.13277},
-  year={2023}
+  journal={IEEE Transactions on Geoscience and Remote Sensing},
+  year={2023},
+  volume={61}
 }
 ```
 
